@@ -13,10 +13,11 @@ const formatTime = (seconds: number) => {
 export const PlaybackControls = () => {
 	const { currentSong, isPlaying, togglePlay, playNext, playPrevious } = usePlayerStore();
 
-	const [volume, setVolume] = useState(75);
+	const [volume, setVolume] = useState(5);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+
 
 	useEffect(() => {
 		audioRef.current = document.querySelector("audio");
@@ -29,6 +30,7 @@ export const PlaybackControls = () => {
 
 		audio.addEventListener("timeupdate", updateTime);
 		audio.addEventListener("loadedmetadata", updateDuration);
+		audio.volume = volume / 100;
 
 		const handleEnded = () => {
 			usePlayerStore.setState({ isPlaying: false });

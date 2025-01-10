@@ -17,6 +17,7 @@ import authRoutes from "./routes/auth.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
 import statRoutes from "./routes/stat.route.js";
+import searchRoutes from "./routes/search.route.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ const PORT = process.env.PORT;
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
+
 
 app.use(
 	cors({
@@ -69,6 +71,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
+app.use("/api/search", searchRoutes);
 
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "../frontend/dist")));

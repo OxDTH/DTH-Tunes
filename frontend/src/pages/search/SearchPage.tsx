@@ -1,30 +1,64 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Search } from 'lucide-react';
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
+import axios from "../../lib/axios";
+
+interface Song {
+  _id: string;
+  title: string;
+  artist: string;
+  imageUrl: string;
+  audioUrl: string;
+  duration: number;
+  albumId: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 
 const SearchBar = () => {
-  const [query, setQuery] = useState('');
-  interface Song {
-    _id: string;
-    title: string;
-    artist: string;
-  }
-
+  const [query, setQuery] = useState("");
+  const [inputPause, setInputPause] = useState("");
   const [results, setResults] = useState<Song[]>([]);
+  const { currentSong, setCurrentSong, togglePlay } = usePlayerStore();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setInputPause(query); 
+    }, 1500)
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  useEffect(() => {
+    if (inputPause && inputPause.length) handleSearch();
+  }, [inputPause]);
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") handleSearch();
+  }
+
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`/api/search?q=${query}`);
-      setResults(response.data);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
+      if (!query?.length) return [];
+      const result = await axios.get(`/search?q=${query}`);
+      if (result && Array.isArray(result.data)) setResults(result.data);
+    } 
+    catch (e) {
+      console.error("Error fetching search results:", e);
     }
-  };
+  }
+
+  const handlePlay = (song: Song) => {
+    console.log(song)
+    if (currentSong?._id === song?._id) togglePlay();
+    else setCurrentSong(song);
+  }
+
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -34,6 +68,7 @@ const SearchBar = () => {
           type="text"
           value={query}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder="Search..."
           className="w-full p-2 text-lg text-white border-0 focus:outline-none rounded-lg shadow-lg bg-gray-500"
         />
@@ -45,20 +80,27 @@ const SearchBar = () => {
         </button>
       </div>
       <div className="w-full max-w-[998px]">
-        {results.map((song) => (
-          <div key={song._id} className="flex justify-between items-center bg-zinc-800 p-4 rounded-lg shadow-lg mb-2">
-            <div>
-              <h3 className="text-white text-lg">{song.title}</h3>
-              <p className="text-gray-400">{song.artist}</p>
-            </div>
-            <button
-              onClick={() => alert(`Playing ${song.title}`)}
-              className="bg-zinc-700 text-white p-2 rounded-md hover:bg-black transition"
+        {results && Array.isArray(results) ? (
+          results.map((song) => (
+            <div
+              key={song._id}
+              className="flex justify-between items-center bg-zinc-800 p-4 rounded-lg shadow-lg mb-2"
             >
-              Play
-            </button>
-          </div>
-        ))}
+              <div>
+                <h3 className="text-white text-lg">{song.title}</h3>
+                <p className="text-gray-400">{song.artist}</p>
+              </div>
+              <button
+                onClick={() => { handlePlay(song) }}
+                className="bg-zinc-700 text-white p-2 rounded-md hover:bg-black transition"
+              >
+                Play
+              </button>
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

@@ -80,3 +80,14 @@ export const getTrendingSongs = async (req, res, next) => {
 		next(error);
 	}
 };
+
+
+export const getSongSuggestions = async (req, res, next) => {
+	try {
+		const songs = await Song.find({ title: { $regex: '^' + req.query.q, $options: "i" } });
+
+		res.json(songs);
+	} catch (error) {
+		next(error);
+	}
+}
