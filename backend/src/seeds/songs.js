@@ -128,7 +128,8 @@ const songs = [
 		title: "Ishq Hai",
 		artist: "Anurag Saikia,Romy,Amarabha Banerjee",
 		imageUrl: "/cover-images/Ishq Hai - Mismatched S3.png",
-		audioUrl: "/songs/Ishq Hai - Mismatched S3.mp3"
+		audioUrl: "/songs/Ishq Hai - Mismatched S3.mp3",
+		duration: 314, // 5:14
 	},
 ];
 

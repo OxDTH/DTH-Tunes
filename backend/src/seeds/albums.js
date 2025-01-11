@@ -124,7 +124,8 @@ const seedDatabase = async () => {
 				artist: "Anurag Saikia,Romy,Amarabha Banerjee",
 				imageUrl: "/cover-images/Ishq Hai - Mismatched S3.png",
 				audioUrl: "/songs/Ishq Hai - Mismatched S3.mp3",
-				plays: Math.floor(Math.random() * 5000)
+				plays: Math.floor(Math.random() * 5000),
+				duration: 314, // 5:14
 			},
 		]);
 
