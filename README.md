@@ -51,3 +51,15 @@ CLERK_SECRET_KEY=...
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=...
 ```
+
+For building App:
+-  npm install --save-dev electron
+
+For Run:
+- npm run build
+ 
+For Build ( Testing):
+- npm electron start
+
+For Build App:
+- npm electron build
