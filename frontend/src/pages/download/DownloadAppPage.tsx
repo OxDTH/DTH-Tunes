@@ -17,7 +17,7 @@ const DownloadAppPage = () => {
                 className="bg-black border border-zinc-600 text-white px-6 py-2 rounded-lg flex items-center hover:bg-zinc-800"
               >
                 <img
-                  src="/public/Microsoft.png"
+                  src="/Microsoft.png"
                   alt="Microsoft Image"
                   className="w-28"
                 />
