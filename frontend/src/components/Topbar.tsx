@@ -21,12 +21,12 @@ const Topbar = () => {
 				DTH Tunes	
 			</div>
 			<div className='flex items-center gap-4'>
-				{isAdmin && (
-					<Link to={"/admin"} className={cn(buttonVariants({ variant: "outline" }))}>
-						<LayoutDashboardIcon className='size-4  mr-2' />
-						Admin Dashboard
-					</Link>
-				)}
+			{isAdmin && (
+				<Link to={"/admin"} className={cn(buttonVariants({ variant: "outline" }))}>
+					<LayoutDashboardIcon className='size-4 mr-2' />
+					<span className='hidden sm:inline'>Admin Dashboard</span>
+				</Link>
+			)}
 
 				<SignedOut>
 					<SignInOAuthButtons />

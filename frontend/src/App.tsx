@@ -6,6 +6,7 @@ import MainLayout from "./layout/MainLayout";
 import ChatPage from "./pages/chat/ChatPage";
 import AlbumPage from "./pages/album/AlbumPage";
 import AdminPage from "./pages/admin/AdminPage";
+import DownloadappPage from "./pages/download/DownloadAppPage";
 
 import { Toaster } from "react-hot-toast";
 import NotFoundPage from "./pages/404/NotFoundPage";
@@ -28,6 +29,7 @@ function App() {
 					<Route path='/albums/:albumId' element={<AlbumPage />} />
 					<Route path='*' element={<NotFoundPage />} />
 					<Route path='/search' element={<SearchPage />} />
+					<Route path='/downloadApp' element={<DownloadappPage />} />
 				</Route>
 			</Routes>
 			<Toaster />

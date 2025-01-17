@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { SignedIn } from "@clerk/clerk-react";
-import { HomeIcon, Library, MessageCircle, Search } from "lucide-react";
+import { CloudDownload, HomeIcon, Library, MessagesSquare, Search } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -60,10 +60,23 @@ const LeftSidebar = () => {
 								})
 							)}
 						>
-							<MessageCircle className='mr-2 size-5' />
+							<MessagesSquare className='mr-2 size-5' />
 							<span className='hidden md:inline'>Messages</span>
 						</Link>
 					</SignedIn>
+
+					<Link
+						to={"/downloadApp"}
+						className={cn(
+							buttonVariants({
+								variant: "ghost",
+								className: "w-full justify-start text-white hover:bg-zinc-800",
+							})
+						)}
+					>
+						<CloudDownload className='mr-2 size-5' />
+						<span className='hidden md:inline'>Download App</span>
+					</Link>
 				</div>
 			</div>
 
