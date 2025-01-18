@@ -63,7 +63,7 @@ const SearchBar = () => {
   return (
     <div className="flex flex-col items-center p-8">
       <div className="flex items-center bg-zinc-900 p-4 rounded-lg shadow-lg max-w-[998px] w-full mb-4">
-        <Search className="text-gray-500 mr-3" />
+      <Search className="text-gray-500 mr-3 hidden sm:inline" />
         <input
           type="text"
           value={query}
