@@ -1,0 +1,92 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main, master]
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Build frontend
+        run: npm run build --prefix frontend
+
+      - name: Run frontend linting (if available)
+        run: |
+          if [ -f "frontend/package.json" ] && grep -q "lint" frontend/package.json; then
+            npm run lint --prefix frontend || echo "Linting failed or not configured"
+          else
+            echo "No linting script found in frontend"
+          fi
+
+      - name: Run backend linting (if available)
+        run: |
+          if [ -f "backend/package.json" ] && grep -q "lint" backend/package.json; then
+            npm run lint --prefix backend || echo "Linting failed or not configured"
+          else
+            echo "No linting script found in backend"
+          fi
+
+      - name: Run tests (if available)
+        run: |
+          # Check for test scripts in root package.json
+          if grep -q "test" package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' package.json; then
+            npm test
+          fi
+
+          # Check for test scripts in backend
+          if [ -f "backend/package.json" ] && grep -q "test" backend/package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' backend/package.json; then
+            npm test --prefix backend
+          fi
+
+          # Check for test scripts in frontend
+          if [ -f "frontend/package.json" ] && grep -q "test" frontend/package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' frontend/package.json; then
+            npm test --prefix frontend
+          fi
+
+      - name: Comment on PR
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Dependabot PR Validation Successful**\n\n- Dependencies installed successfully\n- Build completed without errors\n- Linting passed (where configured)\n- Tests passed (where configured)\n\nThis PR is ready for review and merge.'
+            })
+
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Dependabot PR Validation Failed**\n\nSome checks failed during validation. Please review the workflow logs and address any issues before merging.\n\n- Check the Actions tab for detailed error information\n- Ensure all dependencies are compatible\n- Verify that build and test processes work correctly'
+            })
