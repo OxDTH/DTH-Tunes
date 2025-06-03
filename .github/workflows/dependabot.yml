@@ -20,37 +20,52 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
-
-      - name: Install root dependencies
-        run: npm ci
+          cache: "npm"      - name: Install root dependencies
+        run: |
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install backend dependencies
-        run: npm ci --prefix backend
+        run: |
+          cd backend
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install frontend dependencies
-        run: npm ci --prefix frontend
+        run: |
+          cd frontend
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Build frontend
-        run: npm run build --prefix frontend
-
-      - name: Run frontend linting (if available)
         run: |
-          if [ -f "frontend/package.json" ] && grep -q "lint" frontend/package.json; then
-            npm run lint --prefix frontend || echo "Linting failed or not configured"
+          cd frontend
+          npm run build      - name: Run frontend linting (if available)
+        run: |
+          cd frontend
+          if [ -f "package.json" ] && grep -q "lint" package.json; then
+            npm run lint || echo "Linting failed or not configured"
           else
             echo "No linting script found in frontend"
           fi
 
       - name: Run backend linting (if available)
         run: |
-          if [ -f "backend/package.json" ] && grep -q "lint" backend/package.json; then
-            npm run lint --prefix backend || echo "Linting failed or not configured"
+          cd backend
+          if [ -f "package.json" ] && grep -q "lint" package.json; then
+            npm run lint || echo "Linting failed or not configured"
           else
             echo "No linting script found in backend"
-          fi
-
-      - name: Run tests (if available)
+          fi      - name: Run tests (if available)
         run: |
           # Check for test scripts in root package.json
           if grep -q "test" package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' package.json; then
@@ -58,13 +73,21 @@ jobs:
           fi
 
           # Check for test scripts in backend
-          if [ -f "backend/package.json" ] && grep -q "test" backend/package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' backend/package.json; then
-            npm test --prefix backend
+          if [ -f "backend/package.json" ]; then
+            cd backend
+            if grep -q "test" package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' package.json; then
+              npm test
+            fi
+            cd ..
           fi
 
           # Check for test scripts in frontend
-          if [ -f "frontend/package.json" ] && grep -q "test" frontend/package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' frontend/package.json; then
-            npm test --prefix frontend
+          if [ -f "frontend/package.json" ]; then
+            cd frontend
+            if grep -q "test" package.json && ! grep -q '"test": "echo \\"Error: no test specified\\" && exit 1"' package.json; then
+              npm test
+            fi
+            cd ..
           fi
 
       - name: Comment on PR

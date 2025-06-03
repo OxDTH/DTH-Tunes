@@ -21,24 +21,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-
-      - name: Install root dependencies
-        run: npm ci
+          cache: "npm"      - name: Install root dependencies
+        run: |
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install backend dependencies
-        run: npm ci --prefix backend
+        run: |
+          cd backend
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install frontend dependencies
-        run: npm ci --prefix frontend
-
-      - name: Build project
-        run: npm run build
-
-      - name: Run linting (frontend)
         run: |
-          if [ -f "frontend/package.json" ] && grep -q "lint" frontend/package.json; then
-            npm run lint --prefix frontend
+          cd frontend
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi      - name: Build project
+        run: |
+          # Build frontend (since that's what the root build script does)
+          cd frontend
+          npm run build      - name: Run linting (frontend)
+        run: |
+          cd frontend
+          if [ -f "package.json" ] && grep -q "lint" package.json; then
+            npm run lint
           else
             echo "No linting script found in frontend"
           fi
