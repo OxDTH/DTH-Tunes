@@ -25,6 +25,9 @@
 		"node-cron": "^3.0.3",
 		"socket.io": "^4.8.1"
 	},
+	"overrides": {
+		"socket.io-parser": "^4.2.6"
+	},
 	"devDependencies": {
 		"nodemon": "^3.1.9"
 	}
